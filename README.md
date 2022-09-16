@@ -2,7 +2,7 @@
 
 <img src="https://github.com/jadsonjs/gauge-ci/blob/master/gauge.png" width="800">
 
-Project to calc CI sub practices values
+Project to calc CI sub-practices values
 
    - **Build Duration**: It measures the duration of the build (build finished at timestamp - build started at timestamp).
 

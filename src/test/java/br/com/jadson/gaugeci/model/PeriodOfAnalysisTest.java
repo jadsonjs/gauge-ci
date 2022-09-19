@@ -16,7 +16,7 @@ class PeriodOfAnalysisTest {
                 LocalDateTime.of(2021, 1, 16, 15, 10, 32), PeriodOfAnalysis.PERIOD.MONTH);
 
         Assertions.assertEquals(44, periods.size());
-        Assertions.assertEquals(LocalDateTime.of(2017, 5, 25, 0, 0, 0), periods.get(0).getInit());
+        Assertions.assertEquals(LocalDateTime.of(2017, 5, 25, 0, 0, 0), periods.get(0).getStart());
         Assertions.assertEquals(LocalDateTime.of(2021, 1, 16, 23, 59, 59), periods.get(periods.size()-1).getEnd());
     }
 
@@ -37,10 +37,10 @@ class PeriodOfAnalysisTest {
         }
 
         Assertions.assertEquals(44, periods.size());
-        Assertions.assertEquals(LocalDateTime.of(2017, 5, 25, 0, 0, 0), periods.get(0).getInit());
+        Assertions.assertEquals(LocalDateTime.of(2017, 5, 25, 0, 0, 0), periods.get(0).getStart());
         Assertions.assertEquals(LocalDateTime.of(2017, 6, 25, 23, 59, 59), periods.get(0).getEnd());
 
-        Assertions.assertEquals(LocalDateTime.of(2020, 12, 26, 0, 0, 0), periods.get(periods.size()-1).getInit());
+        Assertions.assertEquals(LocalDateTime.of(2020, 12, 26, 0, 0, 0), periods.get(periods.size()-1).getStart());
         Assertions.assertEquals(LocalDateTime.of(2021, 1, 16, 23, 59, 59), periods.get(periods.size()-1).getEnd());
     }
 
@@ -64,7 +64,7 @@ class PeriodOfAnalysisTest {
 
         Assertions.assertEquals(1, periods.size());
 
-        Assertions.assertEquals(LocalDateTime.of(2017, 5, 25, 0, 0, 0), periods.get(0).getInit());
+        Assertions.assertEquals(LocalDateTime.of(2017, 5, 25, 0, 0, 0), periods.get(0).getStart());
         Assertions.assertEquals(LocalDateTime.of(2017, 5, 26, 23, 59, 59), periods.get(periods.size()-1).getEnd());
 
     }
@@ -87,10 +87,10 @@ class PeriodOfAnalysisTest {
         }
 
         Assertions.assertEquals(9, periods.size());
-        Assertions.assertEquals(LocalDateTime.of(2021, 1, 16, 0, 0, 0), periods.get(0).getInit());
+        Assertions.assertEquals(LocalDateTime.of(2021, 1, 16, 0, 0, 0), periods.get(0).getStart());
         Assertions.assertEquals(LocalDateTime.of(2021, 1, 23, 23, 59, 59), periods.get(0).getEnd());
 
-        Assertions.assertEquals(LocalDateTime.of(2021, 3, 14, 0, 0, 0), periods.get(periods.size()-1).getInit());
+        Assertions.assertEquals(LocalDateTime.of(2021, 3, 14, 0, 0, 0), periods.get(periods.size()-1).getStart());
         Assertions.assertEquals(LocalDateTime.of(2021, 3, 16, 23, 59, 59), periods.get(periods.size()-1).getEnd());
     }
 }

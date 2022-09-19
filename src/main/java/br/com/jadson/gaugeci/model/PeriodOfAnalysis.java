@@ -14,18 +14,18 @@ public class PeriodOfAnalysis {
 
     public enum PERIOD{ DAY, MONTH, WEEK, YEAR}
 
-    LocalDateTime init;
+    LocalDateTime start;
     LocalDateTime end;
 
-    PERIOD period;
+    PERIOD period = PERIOD.MONTH;
 
     /**
      * Tee value of CI metric
      */
-    BigDecimal value;
+    BigDecimal value = BigDecimal.ZERO;
 
-    public PeriodOfAnalysis(LocalDateTime init, LocalDateTime end, PERIOD period, BigDecimal value) {
-        this.init = init;
+    public PeriodOfAnalysis(LocalDateTime start, LocalDateTime end, PERIOD period, BigDecimal value) {
+        this.start = start;
         this.end = end;
         this.period = period;
         this.value = value;
@@ -67,20 +67,24 @@ public class PeriodOfAnalysis {
     private static LocalDateTime incrementPeriod(PERIOD period, int qtd, LocalDateTime ptr) {
         switch (period){
             case YEAR:
-                ptr.plusYears(qtd);
+                ptr = ptr.plusYears(qtd);
+                break;
             case MONTH:
-                ptr.plusMonths(qtd);
+                ptr = ptr.plusMonths(qtd);
+                break;
             case WEEK:
-                ptr.plusWeeks(qtd);
+                ptr = ptr.plusWeeks(qtd);
+                break;
             case DAY:
-                ptr.plusDays(qtd);
+                ptr = ptr.plusDays(qtd);
+                break;
         }
         return ptr.with(LocalTime.of(23, 59, 59));
     }
 
 
-    public LocalDateTime getInit() {
-        return init;
+    public LocalDateTime getStart() {
+        return start;
     }
 
     public LocalDateTime getEnd() {
@@ -102,6 +106,6 @@ public class PeriodOfAnalysis {
 
     @Override
     public String toString() {
-        return period+" [ " + "init=" + init + " --> end=" + end + " ]";
+        return period+" [ " + "start=" + start + " --> end=" + end + " ] value: " +value;
     }
 }

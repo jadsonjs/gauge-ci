@@ -37,7 +37,7 @@ public class CommitsPerWeekDayProcessor {
 
 
     /**
-     * Calc history of commit activity CI sub-practice during several period of analysis
+     * Calc history of commit per weekday CI sub-practice during several period of analysis
      *
      * @param commits
      * @param start
@@ -59,7 +59,7 @@ public class CommitsPerWeekDayProcessor {
 
 
     /**
-     * Calc commit activity CI sub-practice for a specific period of time
+     * Calc commit per week day CI sub-practice for a specific period of time
      * @param commits
      * @param start
      * @param end

@@ -8,8 +8,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class DateUtilsTest {
 
     @Test
@@ -20,19 +18,19 @@ class DateUtilsTest {
         Date date = sdf.parse(dateInString);
 
         Assertions.assertEquals(
-                LocalDateTime.of(2022, 9, 16, 3, 10, 45), new DateUtils().toLocalDateTime( date ) );
+                LocalDateTime.of(2022, 9, 16, 3, 10, 45), new GaugeDateUtils().toLocalDateTime( date ) );
     }
 
     @Test
     void isSameDay() {
-        Assertions.assertTrue(new DateUtils().isSameDay(
+        Assertions.assertTrue(new GaugeDateUtils().isSameDay(
                 LocalDateTime.of(2022, 9, 16, 3, 10, 45),
                 LocalDateTime.of(2022, 9, 16, 23, 45, 29)));
     }
 
     @Test
     void isNotSameDay() {
-        Assertions.assertFalse(new DateUtils().isSameDay(
+        Assertions.assertFalse(new GaugeDateUtils().isSameDay(
                 LocalDateTime.of(2022, 9, 16, 3, 10, 45),
                 LocalDateTime.of(2022, 9, 15, 23, 45, 29)) );
     }

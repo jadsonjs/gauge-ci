@@ -1,8 +1,7 @@
 package br.com.jadson.gaugeci.controllers;
 
+import br.com.jadson.gaugeci.controllers.input.CommitsAnalysisInputData;
 import br.com.jadson.gaugeci.metrics.CommitActivityProcessor;
-import br.com.jadson.gaugeci.model.Analysis;
-import br.com.jadson.gaugeci.model.CommitOfAnalysis;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -30,27 +28,26 @@ import java.util.List;
 public class CommitActivityController {
 
     @Autowired
-    CommitActivityProcessor commitActivityProcessor;
+    CommitActivityProcessor processor;
 
-    @ApiOperation(value = "Calculate the Commit Activity CI sub-practice")
+    @ApiOperation(value = "Calculate the Commit Activity CI sub-practice for multi periods of analysis")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return the list of Commit Activity CI sub-practices for each period of analysis"),
     })
+    @PostMapping(path = "/history", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PeriodOfAnalysis>> calcCommitsActivityHistory(@RequestBody CommitsAnalysisInputData inputData) {
+
+        return new ResponseEntity<>(processor.calcCommitsActivityHistory(inputData.commits, inputData.start, inputData.end, PeriodOfAnalysis.PERIOD.valueOf(inputData.period)), HttpStatus.OK);
+    }
+
+
+    @ApiOperation(value = "Calculate the Commit Activity CI sub-practice for specific period")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Return the Commit Activity CI sub-practices in the period"),
+    })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PeriodOfAnalysis>> calcCommitsActivity(@RequestBody Analysis analysis) {
-
-        for (CommitOfAnalysis c : analysis.commits){
-            System.out.println(c.date);
-        }
-
-        System.out.println(analysis.start);
-
-        System.out.println(analysis.end);
-
-        System.out.println(analysis.period);
-
-
-        return new ResponseEntity<>(commitActivityProcessor.calcCommitsActivity(analysis.commits, analysis.start, analysis.end, PeriodOfAnalysis.PERIOD.valueOf(analysis.period)), HttpStatus.OK);
+    public ResponseEntity<PeriodOfAnalysis> calcCommitsActivity(@RequestBody CommitsAnalysisInputData inputData) {
+        return new ResponseEntity<>(processor.calcCommitsActivity(inputData.commits, inputData.start, inputData.end, PeriodOfAnalysis.PERIOD.valueOf(inputData.period)), HttpStatus.OK);
     }
 
 

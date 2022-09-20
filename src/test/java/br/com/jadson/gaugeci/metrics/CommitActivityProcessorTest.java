@@ -2,8 +2,8 @@ package br.com.jadson.gaugeci.metrics;
 
 import br.com.jadson.gaugeci.model.CommitOfAnalysis;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
-import br.com.jadson.gaugeci.utils.DateUtils;
-import br.com.jadson.gaugeci.utils.MathUtils;
+import br.com.jadson.gaugeci.utils.GaugeDateUtils;
+import br.com.jadson.gaugeci.utils.GaugeMathUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,10 +25,10 @@ import java.util.List;
 class CommitActivityProcessorTest {
 
     @Spy
-    DateUtils dateUnit;
+    GaugeDateUtils dateUnit;
 
     @Spy
-    MathUtils mathUtil;
+    GaugeMathUtils mathUtil;
 
     @InjectMocks
     CommitActivityProcessor processor;
@@ -72,7 +72,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 1, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 10, 5, 9, 0, 0);
 
-        List<PeriodOfAnalysis> periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
+        List<PeriodOfAnalysis> periodOfAnalysis = processor.calcCommitsActivityHistory(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
         for (PeriodOfAnalysis p : periodOfAnalysis){
             System.out.println(p);
         }
@@ -112,7 +112,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 1, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 5, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, new PeriodOfAnalysis(startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, BigDecimal.ZERO));
+        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
         Assertions.assertEquals(new BigDecimal("1.0000"), periodOfAnalysis.getValue());
 
     }
@@ -146,7 +146,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 5, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, new PeriodOfAnalysis(startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, BigDecimal.ZERO));
+        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
 
         Assertions.assertEquals(new BigDecimal("1.0000"), periodOfAnalysis.getValue());
 
@@ -188,7 +188,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 10, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, new PeriodOfAnalysis(startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, BigDecimal.ZERO));
+        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
 
         Assertions.assertEquals(new BigDecimal("0.5000"), periodOfAnalysis.getValue());
 
@@ -229,7 +229,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 10, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, new PeriodOfAnalysis(startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, BigDecimal.ZERO));
+        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
 
         Assertions.assertEquals(new BigDecimal("0.0000"), periodOfAnalysis.getValue());
 
@@ -270,7 +270,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 5, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = new CommitActivityProcessor(new DateUtils()).calcCommitsActivity(commitsInfo, new PeriodOfAnalysis(startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, BigDecimal.ZERO));
+        PeriodOfAnalysis periodOfAnalysis = new CommitActivityProcessor().calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
 
         Assertions.assertEquals(new BigDecimal("1.0000"), periodOfAnalysis.getValue());
 

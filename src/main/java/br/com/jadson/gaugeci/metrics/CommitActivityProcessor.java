@@ -1,10 +1,10 @@
 package br.com.jadson.gaugeci.metrics;
 
-import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
 import br.com.jadson.gaugeci.model.CommitOfAnalysis;
-import br.com.jadson.gaugeci.utils.DateUtils;
-import br.com.jadson.gaugeci.utils.MathUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
+import br.com.jadson.gaugeci.utils.GaugeDateUtils;
+import br.com.jadson.gaugeci.utils.GaugeMathUtils;
+import br.com.jadson.gaugeci.utils.GaugePeriodOfAnalysisUtils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -27,14 +27,15 @@ import java.util.List;
 public class CommitActivityProcessor {
 
 
-    @Autowired
-    DateUtils dateUtils;
+    GaugeDateUtils dateUtils;
 
-    public CommitActivityProcessor(){ }
+    GaugePeriodOfAnalysisUtils periodUtils;
 
-    public CommitActivityProcessor(DateUtils dateUtils){
-        this.dateUtils =dateUtils;
+    public CommitActivityProcessor(){
+        this.dateUtils = new GaugeDateUtils();
+        this.periodUtils = new GaugePeriodOfAnalysisUtils();
     }
+
 
     /**
      * Calc history of commit activity CI sub-practice during several period of analysis
@@ -45,31 +46,29 @@ public class CommitActivityProcessor {
      * @param period
      * @return
      */
-    public List<PeriodOfAnalysis> calcCommitsActivity(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
+    public List<PeriodOfAnalysis> calcCommitsActivityHistory(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
 
         List<PeriodOfAnalysis> periodsOfAnalysis = PeriodOfAnalysis.generatePeriodsOfAnalysis(start, end, period);
 
-        List<PeriodOfAnalysis> return_ = new ArrayList<>();
+        List<PeriodOfAnalysis> returnList = new ArrayList<>();
         for (PeriodOfAnalysis periodOfAnalysis : periodsOfAnalysis){
-            return_.add(calcCommitsActivity(commits, periodOfAnalysis));
+            returnList.add(calcCommitsActivity(commits, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod()));
         }
 
-        return return_;
+        return returnList;
     }
 
 
     /**
      * Calc commit activity CI sub-practice for a specific period of time
      * @param commits
-     * @param periodOfAnalysis
+     * @param start
+     * @param end
      * @return
      */
-    public PeriodOfAnalysis calcCommitsActivity(List<CommitOfAnalysis> commits, PeriodOfAnalysis periodOfAnalysis) {
+    public PeriodOfAnalysis calcCommitsActivity(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
 
-        LocalDateTime start = periodOfAnalysis.getStart();
-        LocalDateTime end = periodOfAnalysis.getEnd();
-
-        List<CommitOfAnalysis> commitsOfPeriod = getCommitsOfPeriod(commits, start, end);
+        List<CommitOfAnalysis> commitsOfPeriod = periodUtils.getCommitsOfPeriod(commits, start, end);
 
         LocalDateTime currentReleaseDate = start;
 
@@ -101,27 +100,9 @@ public class CommitActivityProcessor {
             currentReleaseDate = currentReleaseDate.plusDays(1);
         }
 
-        return new PeriodOfAnalysis(start, end, periodOfAnalysis.getPeriod(), new BigDecimal(qtdDaysWithCommits).divide(new BigDecimal(qtdTotalDays), MathUtils.SCALE, RoundingMode.HALF_UP ));
+        return new PeriodOfAnalysis("Commit Activity", start, end, period, new BigDecimal(qtdDaysWithCommits).divide(new BigDecimal(qtdTotalDays), GaugeMathUtils.SCALE, RoundingMode.HALF_UP ));
 
     }
 
-    private List<CommitOfAnalysis> getCommitsOfPeriod(List<CommitOfAnalysis> commits, LocalDateTime startRelease, LocalDateTime endRelease) {
-
-        List<CommitOfAnalysis> commitsOfRelease = new ArrayList<>();
-
-        for (CommitOfAnalysis commit : commits) {
-
-            if(commit.date != null) {
-
-                LocalDateTime commitDate = commit.date;
-
-                if (commitDate.isAfter(startRelease) && commitDate.isBefore(endRelease)) { // this commit if of this period
-                    commitsOfRelease.add(commit);
-                }
-            }
-        }
-
-        return commitsOfRelease;
-    }
 
 }

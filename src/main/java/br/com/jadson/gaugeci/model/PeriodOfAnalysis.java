@@ -1,5 +1,7 @@
 package br.com.jadson.gaugeci.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,19 +14,25 @@ import java.util.List;
 public class PeriodOfAnalysis {
 
 
-    public enum PERIOD{ DAY, MONTH, WEEK, YEAR}
+    public enum PERIOD{UNIQUE, DAY, MONTH, WEEK, YEAR}
 
+    String subPractice;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime start;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime end;
 
-    PERIOD period = PERIOD.MONTH;
+    PERIOD period;
 
     /**
      * Tee value of CI metric
      */
     BigDecimal value = BigDecimal.ZERO;
 
-    public PeriodOfAnalysis(LocalDateTime start, LocalDateTime end, PERIOD period, BigDecimal value) {
+    public PeriodOfAnalysis(String subPractice, LocalDateTime start, LocalDateTime end, PERIOD period, BigDecimal value) {
+        this.subPractice = subPractice;
         this.start = start;
         this.end = end;
         this.period = period;
@@ -51,14 +59,14 @@ public class PeriodOfAnalysis {
 
 
         while(ptr1.isBefore(end) && ptr2.isBefore(end) ){
-            periods.add(new PeriodOfAnalysis(ptr1, ptr2, period, BigDecimal.ZERO));
+            periods.add(new PeriodOfAnalysis("", ptr1, ptr2, period, BigDecimal.ZERO));
             ptr1 = ptr2.plusDays(1).with(LocalTime.of(0, 0, 0));
             ptr2 = incrementPeriod(period, 1, ptr2);
         }
 
         // add the last period, because the period if not same size.
         if( ! end.equals(ptr1) && ptr1.isBefore(end) ) {
-            periods.add(new PeriodOfAnalysis(ptr1, end.with(LocalTime.of(23, 59, 59)), period, BigDecimal.ZERO));
+            periods.add(new PeriodOfAnalysis("", ptr1, end.with(LocalTime.of(23, 59, 59)), period, BigDecimal.ZERO));
         }
 
         return periods;
@@ -82,6 +90,7 @@ public class PeriodOfAnalysis {
         return ptr.with(LocalTime.of(23, 59, 59));
     }
 
+    public String getSubPractice() { return subPractice; }
 
     public LocalDateTime getStart() {
         return start;

@@ -74,7 +74,7 @@ public class CommitActivityProcessor {
 
         long qtdDaysWithCommits = 0;
 
-        long qtdTotalDays = start.until(end, ChronoUnit.DAYS) + ( dateUtils.isSameDay(start, end) ? 1 : ( start.getHour() < end.getHour() ? 1 :  2) );  // include the start and end.
+        long qtdTotalDays = PeriodOfAnalysis.daysBetweenDate(start, end);
 
         for(int index = 0 ; index < qtdTotalDays ; index ++){
 

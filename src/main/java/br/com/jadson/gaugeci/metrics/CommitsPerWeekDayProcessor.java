@@ -71,9 +71,9 @@ public class CommitsPerWeekDayProcessor {
 
         LocalDateTime currentReleaseDate = start;
 
-        int qtdTotalDays = (int) (start.until(end, ChronoUnit.DAYS) + ( dateUtils.isSameDay(start, end) ? 1 : ( start.getHour() < end.getHour() ? 1 :  2) ));  // include the start and end.
+        long qtdTotalDays = PeriodOfAnalysis.daysBetweenDate(start, end);
 
-        Long[] commitsPerDayList = new Long[qtdTotalDays];
+        Long[] commitsPerDayList = new Long[(int) qtdTotalDays];
 
         // init the array
         for (int i = 0; i < commitsPerDayList.length ; i++) {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class PeriodOfAnalysis {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime end;
 
-    /** Just For debug, not 100% correct */
+    /** Just For debug */
     long daysBetweenDate;
 
     PERIOD period;
@@ -38,12 +39,12 @@ public class PeriodOfAnalysis {
     public PeriodOfAnalysis(String subPractice, LocalDateTime start, LocalDateTime end, PERIOD period, BigDecimal value) {
 
         if(start == null || end == null)
-            throw new IllegalArgumentException("Invalid Perido Date");
+            throw new IllegalArgumentException("Invalid Period Date");
 
         this.subPractice = subPractice;
         this.start = start;
         this.end = end;
-        this.daysBetweenDate = start.until(end, ChronoUnit.DAYS);
+        this.daysBetweenDate = daysBetweenDate(start, end);
 
         this.period = period;
         this.value = value;
@@ -98,6 +99,15 @@ public class PeriodOfAnalysis {
                 break;
         }
         return ptr.with(LocalTime.of(23, 59, 59));
+    }
+
+    public static long daysBetweenDate(LocalDateTime start, LocalDateTime end){
+        return start.until(end, ChronoUnit.DAYS) + ( isSameDay(start, end) ? 1 : ( start.getHour() < end.getHour() ? 1 :  2) );  // include the start and end.
+    }
+
+    private static boolean isSameDay(LocalDateTime date1, LocalDateTime date2) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        return formatter.format(date1).equals(formatter.format(date2));
     }
 
     public String getSubPractice() { return subPractice; }

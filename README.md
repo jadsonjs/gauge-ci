@@ -2,7 +2,13 @@
 
 <img src="https://github.com/jadsonjs/gauge-ci/blob/master/gauge.png" width="800">
 
-Project to calc CI sub-practices values
+**Have you ever thought about the productivity and quality gains that certain CI practices can have on your project?**
+
+These sub-practices emerged from our work that presents a study that evaluates the impact of five CI sub-practices concerning the productivity and quality of GitHub open-source projects.
+
+Pre-print available: https://arxiv.org/abs/2208.02598
+
+The supported CI sub-practices are:
 
    - **Build Duration**: It measures the duration of the build (build finished at timestamp - build started at timestamp).
 
@@ -17,9 +23,11 @@ Project to calc CI sub-practices values
    - **Commit Per Weekday**: Mean of absolute number of commits according to the week day of the analyzed period.
 
 
+The coverage, related with "write automated developer tests" sub-practice, will not be supported because we already have specifics tools that calculate it value.
+
 #### Change Logs:
 
-- 1.0.0 - "Build Duration", "Build Activity", "Build Health", "Time to Fix a Broken Build", "Commit Activity" and "Commit Per Weekday" CI subpracties implementation.
+- 1.0 - "Build Duration", "Build Activity", "Build Health", "Time to Fix a Broken Build", "Commit Activity" and "Commit Per Weekday" CI subpracties implementation.
 
 
 ### Dependencies
@@ -34,11 +42,13 @@ Project to calc CI sub-practices values
 
 Clone the project -> Import it as a gradle project on your IDE.
 
+
 #### From the binary:
 
 Gauge-CI has a binary distribution on **libs/gauge-ci-X.Y.Z-plain.jar** directory.
 
 Include it on the classpath of your project. 
+
 
 #### Run the application as a service:
 
@@ -46,13 +56,8 @@ Download the binary distribution on **libs/gauge-ci-X.Y.Z.jar** directory.
 
 Run the command:
 
-    java -jar -Dserver.port=8080 gauge-ci.jar
+    java -jar -Dserver.port=808X gauge-ci.jar
 
-Access:
-
-    http://localhost:8080/swagger-ui/index.html
-
-Which will be shown to you a set of services available in the tool to calculate the CI sub-practices
 
 #### Run the application at Docker:
 
@@ -60,6 +65,15 @@ Gauge is being published in Docker Hub, if you want to execute without need to i
 the JavaVM in your machine, you can just run the follow docker command:
 
     docker container run -d -p 808X:8080 jadsonjs/gauge-ci:vX.Y.Z
+
+
+#### REST api documentation:
+
+Execute the application and access the follow address, which will be shown to you a set of services available in the tool to calculate the CI sub-practices
+
+
+    http://localhost:808X/swagger-ui/index.html
+
 
 
 ### How to use
@@ -77,15 +91,15 @@ Examples of how to use:
         List<CommitOfAnalysis> commits = new ArrayList<>();
 
         CommitOfAnalysis c1 = new CommitOfAnalysis();
-        c1.date =  LocalDateTime.parse("2021-01-01T12:00:00Z", formatter); //format.parse("2021-01-01T12:00:00Z");
+        c1.date =  LocalDateTime.parse("2021-01-01T12:00:00Z", formatter);
         CommitOfAnalysis c2 = new CommitOfAnalysis();
-        c2.date =  LocalDateTime.parse("2021-01-02T04:00:00Z", formatter); //format.parse("2021-01-02T04:00:00Z");
+        c2.date =  LocalDateTime.parse("2021-01-02T04:00:00Z", formatter);
         CommitOfAnalysis c3 = new CommitOfAnalysis();
-        c3.date =  LocalDateTime.parse("2021-01-03T05:00:00Z", formatter); //format.parse("2021-01-03T05:00:00Z");
+        c3.date =  LocalDateTime.parse("2021-01-03T05:00:00Z", formatter);
         CommitOfAnalysis c4 = new CommitOfAnalysis();
-        c4.date =  LocalDateTime.parse("2021-01-04T06:00:00Z", formatter); //format.parse("2021-01-04T06:00:00Z");
+        c4.date =  LocalDateTime.parse("2021-01-04T06:00:00Z", formatter);
         CommitOfAnalysis c5 = new CommitOfAnalysis();
-        c5.date =  LocalDateTime.parse("2021-01-05T07:00:00Z", formatter); //format.parse("2021-01-05T07:00:00Z");
+        c5.date =  LocalDateTime.parse("2021-01-05T07:00:00Z", formatter);
 
         commits.add(c1);
         commits.add(c2);
@@ -95,7 +109,39 @@ Examples of how to use:
 
        PeriodOfAnalysis periodOfAnalysis = new CommitActivityProcessor()
             .calcCommitsActivity(commits, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
+            
+            
+# Time to Fix Broken Builds
 
+        List<BuildOfAnalysis> buildsInfo = new ArrayList<>();
+
+        BuildOfAnalysis b1 = new BuildOfAnalysis();
+        b1.startedAt = LocalDateTime.of(2021, 1, 10, 1, 0, 0);
+        b1.finishedAt = LocalDateTime.of(2021, 1, 10, 1, 0, 0);
+        b1.state = "passed";
+
+        BuildOfAnalysis b2 = new BuildOfAnalysis();
+        b2.startedAt = LocalDateTime.of(2021, 1, 10, 2, 0, 0);
+        b2.finishedAt = LocalDateTime.of(2021, 1, 10, 2, 0, 0);
+        b2.state = "failed";
+
+        BuildOfAnalysis b3 = new BuildOfAnalysis();
+        b3.startedAt = LocalDateTime.of(2021, 1, 10, 2, 30, 0);
+        b3.finishedAt = LocalDateTime.of(2021, 1, 10, 2, 30, 0);
+        b3.state = "passed";
+        
+        buildsInfo.add(b1);
+        buildsInfo.add(b2);
+        buildsInfo.add(b3);
+        
+        LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 10, 0, 0, 0);
+        LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
+
+
+        PeriodOfAnalysis periodOfAnalysis = new TimeToFixBrokenBuildProcessor().calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, 
+               PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEAN, UnitOfTime.HOURS);
+
+      
 #############################################
 #####          As a service             #####
 #############################################
@@ -103,7 +149,7 @@ Examples of how to use:
 # Commit Activity
 
       POST to localhost:8080/commit-activity
-
+      HEADER Content-Type: application/json
 body
 
         {
@@ -139,6 +185,51 @@ returns
             "period": "MONTH",
             "value": 0.2000
         }
+        
+        
+# Time to Fix Broken Build
+
+      POST to localhost:8080/time-to-fix-broken-build
+      HEADER Content-Type: application/json
+
+body
+
+        {
+          "start": "2022-01-01T01:00:00.000",
+          "end": "2022-01-05T10:00:00.000",
+          "period": "MONTH",
+          "measure": "MEAN",
+          "unit": "HOURS",
+          "builds": [
+            {
+              "startedAt": "2022-01-05T01:00:00.000",
+              "finishedAt": "2022-01-05T01:30:00.000",
+              "state": "passed"
+            },
+            {
+              "startedAt": "2022-01-05T02:00:00.000",
+              "finishedAt": "2022-01-05T02:30:00.000",
+              "state": "failed"
+            },
+            {
+              "startedAt": "2022-01-05T03:00:00.000",
+              "finishedAt": "2022-01-05T03:30:00.000",
+              "state": "passed"
+            }
+          ]
+        
+        }
+
+returns
+
+        {
+            "subPractice": "Time To Fix Broken Build",
+            "start": "2022-01-01 01:00:00",
+            "end": "2022-01-05 10:00:00",
+            "daysBetweenDate": 5,
+            "period": "MONTH",
+            "value": 1.0000
+        }      
 
 ```
 

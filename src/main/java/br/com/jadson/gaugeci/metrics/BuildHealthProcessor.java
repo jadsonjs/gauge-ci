@@ -19,6 +19,8 @@ import java.util.List;
  * *** Build Health ***: It is a unit interval representing the rate of build failures across days.
  * If there were build failures every day, the value would be 0. if there were no build failures, the value would be 1.
  *
+ *  totalBuilds - qtdBrokenBuilds / totalBuilds
+ *
  * @author  Jadson Santos - jadsonjs@gmail.com
  */
 @Component
@@ -82,5 +84,8 @@ public class BuildHealthProcessor {
         return new PeriodOfAnalysis("Build Health", start, end, period, buildHealth);
 
     }
+
+
+
 
 }

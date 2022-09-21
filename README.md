@@ -54,6 +54,14 @@ Access:
 
 Which will be shown to you a set of services available in the tool to calculate the CI sub-practices
 
+#### Run the application at Docker:
+
+Gauge is being published in Docker Hub, if you want to execute without need to install 
+the JavaVM in your machine, you can just run the follow docker command:
+
+    docker container run -d -p 808X:8080 jadsonjs/gauge-ci:vX.Y.Z
+
+
 ### How to use
 
 Examples of how to use:

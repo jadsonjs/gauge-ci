@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,9 @@ public class PeriodOfAnalysis {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime end;
 
+    /** Just For debug, not 100% correct */
+    long daysBetweenDate;
+
     PERIOD period;
 
     /**
@@ -32,9 +36,15 @@ public class PeriodOfAnalysis {
     BigDecimal value = BigDecimal.ZERO;
 
     public PeriodOfAnalysis(String subPractice, LocalDateTime start, LocalDateTime end, PERIOD period, BigDecimal value) {
+
+        if(start == null || end == null)
+            throw new IllegalArgumentException("Invalid Perido Date");
+
         this.subPractice = subPractice;
         this.start = start;
         this.end = end;
+        this.daysBetweenDate = start.until(end, ChronoUnit.DAYS);
+
         this.period = period;
         this.value = value;
     }
@@ -92,6 +102,8 @@ public class PeriodOfAnalysis {
 
     public String getSubPractice() { return subPractice; }
 
+    public long getDaysBetweenDate() { return daysBetweenDate; }
+
     public LocalDateTime getStart() {
         return start;
     }
@@ -115,6 +127,6 @@ public class PeriodOfAnalysis {
 
     @Override
     public String toString() {
-        return period+" [ " + "start=" + start + " --> end=" + end + " ] value: " +value;
+        return period+" [ " + "start= " + start + " end= " + end + " ] value: " +value+ " qty days: "+daysBetweenDate;
     }
 }

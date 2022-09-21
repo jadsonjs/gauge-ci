@@ -27,7 +27,7 @@ public class GaugePeriodOfAnalysisUtils {
 
             if(build.startedAt != null) {
 
-                if (build.startedAt.isAfter(start) && build.startedAt.isBefore(end)) { // this build if of this release
+                if (build.startedAt.isAfter(start) && build.startedAt.isBefore(end) || build.startedAt.equals(start) || build.startedAt.equals(end)) { // this build if of this release
                     buildsOfPeriod.add(build);
                 }
             }
@@ -54,7 +54,7 @@ public class GaugePeriodOfAnalysisUtils {
 
                 LocalDateTime commitDate = commit.date;
 
-                if (commitDate.isAfter(startRelease) && commitDate.isBefore(endRelease)) { // this commit if of this period
+                if (commitDate.isAfter(startRelease) && commitDate.isBefore(endRelease) || commitDate.equals(startRelease) || commitDate.equals(endRelease) ) { // this commit if of this period
                     commitsOfRelease.add(commit);
                 }
             }

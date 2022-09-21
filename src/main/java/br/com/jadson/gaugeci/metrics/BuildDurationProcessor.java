@@ -10,6 +10,7 @@ import br.com.jadson.gaugeci.utils.GaugePeriodOfAnalysisUtils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,15 +67,27 @@ public class BuildDurationProcessor {
 
         List<BuildOfAnalysis> buildOfPeriod = periodUtils.getBuildOfPeriod(builds, start, end);
 
+        validateBuild(buildOfPeriod);
+
         List<BigDecimal> buildsDurations = new ArrayList<>();
 
         for(BuildOfAnalysis buildInfo : buildOfPeriod){
-            buildsDurations.add(dateUtils.scaleTime(buildInfo.finishedAt.getSecond()- buildInfo.startedAt.getSecond(), unit));
+            Duration duration = Duration.between(buildInfo.startedAt, buildInfo.finishedAt);
+            buildsDurations.add(dateUtils.scaleTime(duration.getSeconds(), unit));
         }
 
         return new PeriodOfAnalysis("Build Duration", start, end, period, measure == StatisticalMeasure.MEAN ?  mathUtils.meanOfValues(buildsDurations) : mathUtils.medianOfValues(buildsDurations));
     }
 
+
+    private void validateBuild(List<BuildOfAnalysis> builds) {
+        for(BuildOfAnalysis buildInfo : builds){
+            if(buildInfo.startedAt == null || buildInfo.finishedAt == null){
+                throw new IllegalArgumentException(" build \"startedAt\" and \"finishedAt\" field are required. They can not have null values.");
+            }
+
+        }
+    }
 
 
 }

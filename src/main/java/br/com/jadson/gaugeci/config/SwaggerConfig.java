@@ -34,7 +34,7 @@ public class SwaggerConfig {
                 .description(
                         "Gauge CI is a tool to calculate some CI sub-practices used during my doctor's degree \n "+
                         "The goal is have a unique tool that we can shared information about calculate CI sub-practices")
-                .version("1.0.0")
+                .version("1.0")
                 .license("MIT License")
                 .contact(new Contact("Jadson Santos", "https://jadsonjs.wordpress.com", "jadsonjs@gmail.com"))
                 .build();

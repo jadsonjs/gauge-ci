@@ -29,6 +29,9 @@ import java.util.List;
 @Component
 public class TimeToFixBrokenBuildProcessor {
 
+    private String buildsFailedStatus = "failed";
+    private String buildSuccessStatus = "passed";
+
     // @Autowired to be used without spring boot
     GaugeDateUtils dateUtils;
 
@@ -42,6 +45,15 @@ public class TimeToFixBrokenBuildProcessor {
         this.mathUtils = new GaugeMathUtils();
         this.dateUtils = new GaugeDateUtils();
         this.periodUtils = new GaugePeriodOfAnalysisUtils();
+    }
+    public TimeToFixBrokenBuildProcessor(String successStatusLabel, String failedStatusLabel){
+        this();
+        // pre condition
+        if(successStatusLabel == null || failedStatusLabel == null)
+            throw new IllegalArgumentException("build labels can not be null");
+
+        this.buildSuccessStatus = successStatusLabel;
+        this.buildsFailedStatus = failedStatusLabel;
     }
 
     /**
@@ -90,11 +102,11 @@ public class TimeToFixBrokenBuildProcessor {
 
         for(BuildOfAnalysis buildInfo : buildOfPeriod){
 
-            if( buildInfo.state.equals("failed") && ! failed ){ // failed for first time
+            if( buildInfo.state.equals(this.buildsFailedStatus) && ! failed ){ // failed for first time
                 failed = true;
                 timeOfFailed = buildInfo.finishedAt;
             }
-            if(buildInfo.state.equals("passed") && failed ){ // came back to work
+            if(buildInfo.state.equals(buildSuccessStatus) && failed ){ // came back to work
                 LocalDateTime fixTime = buildInfo.finishedAt;
                 long secondsToFixBuild = timeOfFailed.until( fixTime, ChronoUnit.SECONDS);
 
@@ -106,7 +118,7 @@ public class TimeToFixBrokenBuildProcessor {
         }
 
         if(lastBuildInfo != null) {
-            if (lastBuildInfo.state.equals("failed") && failed) { // if not came back to work in the last build
+            if (lastBuildInfo.state.equals(this.buildsFailedStatus) && failed) { // if not came back to work in the last build
                 LocalDateTime fixTime = lastBuildInfo.finishedAt;
                 long secondsToFixBuild = timeOfFailed.until(fixTime, ChronoUnit.SECONDS);
                 if(secondsToFixBuild > 0)

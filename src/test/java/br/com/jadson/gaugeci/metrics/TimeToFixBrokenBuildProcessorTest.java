@@ -30,7 +30,7 @@ class TimeToFixBrokenBuildProcessorTest {
     GaugeMathUtils mathUtil;
 
     @InjectMocks
-    TimeToFixBrokenBuildProcessor processor;
+    TimeToFixBrokenBuildProcessor processor = new TimeToFixBrokenBuildProcessor();
 
     @BeforeEach
     public void initMocks(){
@@ -46,6 +46,78 @@ class TimeToFixBrokenBuildProcessorTest {
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
 
         Assertions.assertEquals(new BigDecimal("3600"), processor.calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
+    }
+
+    @Test
+    void calcTimeToFixBrokenBuildOtherLabels() {
+
+        List<BuildOfAnalysis> buildsInfo = new ArrayList<>();
+
+        BuildOfAnalysis b1 = new BuildOfAnalysis();
+        b1.startedAt = LocalDateTime.of(2021, 1, 10, 1, 0, 0);
+        b1.finishedAt = LocalDateTime.of(2021, 1, 10, 1, 0, 0);
+        b1.state = "success";
+
+        BuildOfAnalysis b2 = new BuildOfAnalysis();
+        b2.startedAt = LocalDateTime.of(2021, 1, 10, 2, 0, 0);
+        b2.finishedAt = LocalDateTime.of(2021, 1, 10, 2, 0, 0);
+        b2.state = "failure";
+
+        BuildOfAnalysis b3 = new BuildOfAnalysis();
+        b3.startedAt = LocalDateTime.of(2021, 1, 10, 2, 30, 0);
+        b3.finishedAt = LocalDateTime.of(2021, 1, 10, 2, 30, 0);
+        b3.state = "failure";
+
+        BuildOfAnalysis b4 = new BuildOfAnalysis();
+        b4.startedAt = LocalDateTime.of(2021, 1, 10, 2, 40, 0);
+        b4.finishedAt = LocalDateTime.of(2021, 1, 10, 2, 40, 0);
+        b4.state = "failure";
+
+        // 50 min = 3.000 seconds
+        BuildOfAnalysis b5 = new BuildOfAnalysis();
+        b5.startedAt = LocalDateTime.of(2021, 1, 10, 2, 50, 0);
+        b5.finishedAt = LocalDateTime.of(2021, 1, 10, 2, 50, 0);
+        b5.state = "success";
+
+        BuildOfAnalysis b6 = new BuildOfAnalysis();
+        b6.startedAt = LocalDateTime.of(2021, 1, 11, 1, 0, 0);
+        b6.finishedAt = LocalDateTime.of(2021, 1, 11, 1, 0, 0);
+        b6.state = "failure";
+
+        // 24 h = 86.400 seconds
+        BuildOfAnalysis b7 = new BuildOfAnalysis();
+        b7.startedAt = LocalDateTime.of(2021, 1, 12, 1, 0, 0);
+        b7.finishedAt = LocalDateTime.of(2021, 1, 12, 1, 0, 0);
+        b7.state = "success";
+
+        // 1h = 3600s
+        BuildOfAnalysis b8 = new BuildOfAnalysis();
+        b8.startedAt = LocalDateTime.of(2021, 1, 12, 10, 0, 0);
+        b8.finishedAt = LocalDateTime.of(2021, 1, 12, 10, 0, 0);
+        b8.state = "failure";
+
+        BuildOfAnalysis b9 = new BuildOfAnalysis();
+        b9.startedAt = LocalDateTime.of(2021, 1, 12, 11, 0, 0);
+        b9.finishedAt = LocalDateTime.of(2021, 1, 12, 11, 0, 0);
+        b9.state = "success";
+
+        // median of 44.700 seconds to fix broken build
+
+        buildsInfo.add(b1);
+        buildsInfo.add(b2);
+        buildsInfo.add(b3);
+        buildsInfo.add(b4);
+        buildsInfo.add(b5);
+        buildsInfo.add(b6);
+        buildsInfo.add(b7);
+        buildsInfo.add(b8);
+        buildsInfo.add(b9);
+
+        LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 10, 0, 0, 0);
+        LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
+
+        Assertions.assertEquals(new BigDecimal("3600"), new TimeToFixBrokenBuildProcessor("success", "failure")
+                .calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
     }
 
 

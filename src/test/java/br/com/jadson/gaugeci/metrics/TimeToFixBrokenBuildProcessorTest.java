@@ -42,10 +42,7 @@ class TimeToFixBrokenBuildProcessorTest {
 
         List<BuildOfAnalysis> buildsInfo = getSequenceOfBuildsWithFailure();
 
-        LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 10, 0, 0, 0);
-        LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
-
-        Assertions.assertEquals(new BigDecimal("3600"), processor.calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
+        Assertions.assertEquals(new BigDecimal("3600"), processor.calcTimeToFixBrokenBuild(buildsInfo, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
     }
 
     @Test
@@ -113,11 +110,8 @@ class TimeToFixBrokenBuildProcessorTest {
         buildsInfo.add(b8);
         buildsInfo.add(b9);
 
-        LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 10, 0, 0, 0);
-        LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
-
         Assertions.assertEquals(new BigDecimal("3600"), new TimeToFixBrokenBuildProcessor("success", "failure")
-                .calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
+                .calcTimeToFixBrokenBuild(buildsInfo, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
     }
 
 
@@ -126,10 +120,7 @@ class TimeToFixBrokenBuildProcessorTest {
 
         List<BuildOfAnalysis> buildsInfo = getSequenceOfBuildsWithFailure();
 
-        LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 10, 0, 0, 0);
-        LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
-
-        Assertions.assertEquals(new BigDecimal("31000.0000"), processor.calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEAN, UnitOfTime.SECONDS).getValue());
+        Assertions.assertEquals(new BigDecimal("31000.0000"), processor.calcTimeToFixBrokenBuild(buildsInfo, StatisticalMeasure.MEAN, UnitOfTime.SECONDS).getValue());
     }
 
 
@@ -138,10 +129,8 @@ class TimeToFixBrokenBuildProcessorTest {
 
         List<BuildOfAnalysis> buildsInfo = getSequenceOfBuildsWithFailure();
 
-        LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 10, 0, 0, 0);
-        LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
 
-        Assertions.assertEquals(new BigDecimal("1.0000"), processor.calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEDIAN, UnitOfTime.HOURS).getValue());
+        Assertions.assertEquals(new BigDecimal("1.0000"), processor.calcTimeToFixBrokenBuild(buildsInfo, StatisticalMeasure.MEDIAN, UnitOfTime.HOURS).getValue());
     }
 
 
@@ -150,10 +139,8 @@ class TimeToFixBrokenBuildProcessorTest {
 
         List<BuildOfAnalysis> buildsInfo = getSequenceOfBuildsWithFailure();
 
-        LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 10, 0, 0, 0);
-        LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
 
-        Assertions.assertEquals(new BigDecimal("0.0417"), processor.calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEDIAN, UnitOfTime.DAYS).getValue());
+        Assertions.assertEquals(new BigDecimal("0.0417"), processor.calcTimeToFixBrokenBuild(buildsInfo, StatisticalMeasure.MEDIAN, UnitOfTime.DAYS).getValue());
     }
 
 
@@ -165,10 +152,7 @@ class TimeToFixBrokenBuildProcessorTest {
 
         List<BuildOfAnalysis> buildsInfo = getSequenceOfBuildsWithOutFailure();
 
-        LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 10, 0, 0, 0);
-        LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
-
-        Assertions.assertEquals(new BigDecimal("0"), processor.calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
+        Assertions.assertEquals(new BigDecimal("0"), processor.calcTimeToFixBrokenBuild(buildsInfo, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
     }
 
 
@@ -180,12 +164,9 @@ class TimeToFixBrokenBuildProcessorTest {
 
         List<BuildOfAnalysis> buildsInfo = getSequenceOfBuildsOnlyFailure();
 
-        LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 10, 0, 0, 0);
-        LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 15, 9, 0, 0);
-
 
         // 58h or 208800 seconds has the whole period
-        Assertions.assertEquals(new BigDecimal("208800"), processor.calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
+        Assertions.assertEquals(new BigDecimal("208800"), processor.calcTimeToFixBrokenBuild(buildsInfo, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
     }
 
 

@@ -1,6 +1,7 @@
 package br.com.jadson.gaugeci.controllers;
 
 import br.com.jadson.gaugeci.controllers.input.CommitsAnalysisInputData;
+import br.com.jadson.gaugeci.controllers.input.CommitsAnalysisInputDataHistory;
 import br.com.jadson.gaugeci.metrics.CommitActivityProcessor;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -35,7 +37,7 @@ public class CommitActivityController {
             @ApiResponse(code = 200, message = "Return the list of Commit Activity CI sub-practices for each period of analysis"),
     })
     @PostMapping(path = "/history", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PeriodOfAnalysis>> calcCommitsActivityHistory(@RequestBody CommitsAnalysisInputData inputData) {
+    public ResponseEntity<List<PeriodOfAnalysis>> calcCommitsActivityHistory(@RequestBody CommitsAnalysisInputDataHistory inputData) {
 
         return new ResponseEntity<>(processor.calcCommitsActivityHistory(inputData.commits, inputData.start, inputData.end, PeriodOfAnalysis.PERIOD.valueOf(inputData.period)), HttpStatus.OK);
     }
@@ -45,9 +47,18 @@ public class CommitActivityController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return the Commit Activity CI sub-practices in the period"),
     })
+    @PostMapping(path = "/values", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BigDecimal> calcCommitsActivityValues(@RequestBody CommitsAnalysisInputData inputData) {
+        return new ResponseEntity<>(processor.calcCommitsActivityValues(inputData.commits, inputData.start, inputData.end), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Calculate the Commit Activity CI sub-practice for specific period")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Return the Commit Activity CI sub-practices in the period"),
+    })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PeriodOfAnalysis> calcCommitsActivity(@RequestBody CommitsAnalysisInputData inputData) {
-        return new ResponseEntity<>(processor.calcCommitsActivity(inputData.commits, inputData.start, inputData.end, PeriodOfAnalysis.PERIOD.valueOf(inputData.period)), HttpStatus.OK);
+        return new ResponseEntity<>(processor.calcCommitsActivity(inputData.commits, inputData.start, inputData.end), HttpStatus.OK);
     }
 
 

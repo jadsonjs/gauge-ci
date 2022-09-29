@@ -108,8 +108,13 @@ Examples of how to use:
         commits.add(c5);
 
        PeriodOfAnalysis periodOfAnalysis = new CommitActivityProcessor()
-            .calcCommitsActivity(commits, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
+            .calcCommitsActivity(commits, startReleaseDate, endReleaseDate);
             
+       List<PeriodOfAnalysis> periodOfAnalysis = new CommitActivityProcessor()
+            .calcCommitsActivityHistory(commits, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
+       
+       BigDecimal value = new CommitActivityProcessor()
+            .calcCommitsActivityValues(commits, startReleaseDate, endReleaseDate);
             
 # Time to Fix Broken Builds
 
@@ -140,6 +145,10 @@ Examples of how to use:
 
         PeriodOfAnalysis periodOfAnalysis = new TimeToFixBrokenBuildProcessor().calcTimeToFixBrokenBuild(buildsInfo, startReleaseDate, endReleaseDate, 
                PeriodOfAnalysis.PERIOD.MONTH, StatisticalMeasure.MEAN, UnitOfTime.HOURS);
+               
+        PeriodOfAnalysis periodOfAnalysis = new TimeToFixBrokenBuildProcessor().calcTimeToFixBrokenBuildHistory(buildsInfo, StatisticalMeasure.MEAN, UnitOfTime.HOURS);
+               
+        PeriodOfAnalysis periodOfAnalysis = new TimeToFixBrokenBuildProcessor().calcTimeToFixBrokenBuildValues(buildsInfo, UnitOfTime.HOURS);              
 
       
 #############################################
@@ -149,6 +158,8 @@ Examples of how to use:
 # Commit Activity
 
       POST to localhost:8080/commit-activity
+      POST to localhost:8080/commit-activity/history
+      POST to localhost:8080/commit-activity/values
       HEADER Content-Type: application/json
 body
 
@@ -190,6 +201,8 @@ returns
 # Time to Fix Broken Build
 
       POST to localhost:8080/time-to-fix-broken-build
+      POST to localhost:8080/time-to-fix-broken-build/history
+      POST to localhost:8080/time-to-fix-broken-build/values
       HEADER Content-Type: application/json
 
 body

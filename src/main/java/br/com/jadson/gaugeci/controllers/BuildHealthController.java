@@ -1,6 +1,8 @@
 package br.com.jadson.gaugeci.controllers;
 
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputData;
+import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputDataHistory;
+import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputDataValues;
 import br.com.jadson.gaugeci.metrics.BuildHealthProcessor;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -29,11 +32,21 @@ public class BuildHealthController {
             @ApiResponse(code = 200, message = "Return the list of Build Health CI sub-practices for each period of analysis"),
     })
     @PostMapping(path = "/history", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PeriodOfAnalysis>> calcBuildHealthHistory(@RequestBody BuildsAnalysisInputData inputData) {
-
+    public ResponseEntity<List<PeriodOfAnalysis>> calcBuildHealthHistory(@RequestBody BuildsAnalysisInputDataHistory inputData) {
         return new ResponseEntity<>(processor.calcBuildHealthHistory(inputData.builds, inputData.start, inputData.end,
                 PeriodOfAnalysis.PERIOD.valueOf(inputData.period) ), HttpStatus.OK);
     }
+
+
+    @ApiOperation(value = "Calculate the Build Health CI sub-practice values")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Return the list of Build Health CI sub-practices values"),
+    })
+    @PostMapping(path = "/values", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BigDecimal> calcBuildHealthValues(@RequestBody BuildsAnalysisInputDataValues inputData) {
+        return new ResponseEntity<>(processor.calcBuildHealthValues(inputData.builds), HttpStatus.OK);
+    }
+
 
 
     @ApiOperation(value = "Calculate the Build Health CI sub-practice for specific period")
@@ -42,7 +55,8 @@ public class BuildHealthController {
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PeriodOfAnalysis> calcBuildHealth(@RequestBody BuildsAnalysisInputData inputData) {
-        return new ResponseEntity<>(processor.calcBuildHealth(inputData.builds, inputData.start, inputData.end,
-                PeriodOfAnalysis.PERIOD.valueOf(inputData.period)), HttpStatus.OK);
+        return new ResponseEntity<>(processor.calcBuildHealth(inputData.builds, inputData.start, inputData.end), HttpStatus.OK);
     }
+
+
 }

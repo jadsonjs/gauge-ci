@@ -29,8 +29,9 @@ import java.util.List;
 @Component
 public class TimeToFixBrokenBuildProcessor {
 
-    private String buildsFailedStatus = "failed";
     private String buildSuccessStatus = "passed";
+    private String buildsFailedStatus = "failed";
+
 
     // @Autowired to be used without spring boot
     GaugeDateUtils dateUtils;
@@ -46,6 +47,13 @@ public class TimeToFixBrokenBuildProcessor {
         this.dateUtils = new GaugeDateUtils();
         this.periodUtils = new GaugePeriodOfAnalysisUtils();
     }
+
+    /**
+     * Constructor to define labels of success and failed.
+     *
+     * @param successStatusLabel
+     * @param failedStatusLabel
+     */
     public TimeToFixBrokenBuildProcessor(String successStatusLabel, String failedStatusLabel){
         this();
         // pre condition
@@ -55,6 +63,7 @@ public class TimeToFixBrokenBuildProcessor {
         this.buildSuccessStatus = successStatusLabel;
         this.buildsFailedStatus = failedStatusLabel;
     }
+
 
     /**
      * Calc history of time to fix CI sub-practice during several period of analysis
@@ -71,27 +80,58 @@ public class TimeToFixBrokenBuildProcessor {
 
         List<PeriodOfAnalysis> returnList = new ArrayList<>();
         for (PeriodOfAnalysis periodOfAnalysis : periodsOfAnalysis){
-            returnList.add(calcTimeToFixBrokenBuild(builds, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod(), measure, unit));
+            List<BuildOfAnalysis> buildOfPeriod = periodUtils.getBuildOfPeriod(builds, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd());
+            returnList.add(calcTimeToFixBrokenBuildOfPeriod(buildOfPeriod, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod(), measure, unit));
         }
 
         return returnList;
     }
 
-    public PeriodOfAnalysis calcTimeToFixBrokenBuild(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period, StatisticalMeasure measure, UnitOfTime unit) {
+    /**
+     *
+     * @param builds
+     * @param start
+     * @param end
+     * @param period
+     * @param measure
+     * @param unit
+     * @return
+     */
+    private PeriodOfAnalysis calcTimeToFixBrokenBuildOfPeriod(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period, StatisticalMeasure measure, UnitOfTime unit) {
+        List<BigDecimal> timesToFix = calcTimeToFixBrokenBuildValues(builds, unit);
+        return new PeriodOfAnalysis("Time To Fix Broken Build", start, end, period, measure == StatisticalMeasure.MEAN ?  mathUtils.meanOfValues(timesToFix) : mathUtils.medianOfValues(timesToFix));
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Calcule the value for all periods
+     * @param builds
+     * @param measure
+     * @param unit
+     * @return
+     */
+    public PeriodOfAnalysis calcTimeToFixBrokenBuild(List<BuildOfAnalysis> builds, StatisticalMeasure measure, UnitOfTime unit) {
+
+        orderBuilds(builds);
+
+        List<BigDecimal> timesToFix = calcTimeToFixBrokenBuildValues(builds, unit);
+        return new PeriodOfAnalysis("Time To Fix Broken Build", builds.get(0).startedAt, builds.get(builds.size()-1).finishedAt, PeriodOfAnalysis.PERIOD.UNIQUE, measure == StatisticalMeasure.MEAN ?  mathUtils.meanOfValues(timesToFix) : mathUtils.medianOfValues(timesToFix));
+
+    }
+
+
+    /**
+     * Return a list of sub-pratice values.
+     * @param builds
+     * @param unit
+     * @return
+     */
+    public List<BigDecimal> calcTimeToFixBrokenBuildValues(List<BuildOfAnalysis> builds, UnitOfTime unit) {
 
         validateBuild(builds);
 
-        List<BuildOfAnalysis> buildOfPeriod = periodUtils.getBuildOfPeriod(builds, start, end);
-
-        Collections.sort(buildOfPeriod, (o1, o2) -> {
-            if(o1.finishedAt == null && o2.finishedAt == null)
-                return 0;
-            if(o1.finishedAt == null)
-                return -1;
-            if(o2.finishedAt == null)
-                return 1;
-            return o1.finishedAt.compareTo(o2.finishedAt);
-        });
+        orderBuilds(builds);
 
         List<BigDecimal> timesToFix = new ArrayList<>();
 
@@ -100,7 +140,7 @@ public class TimeToFixBrokenBuildProcessor {
 
         BuildOfAnalysis lastBuildInfo = null;
 
-        for(BuildOfAnalysis buildInfo : buildOfPeriod){
+        for(BuildOfAnalysis buildInfo : builds){
 
             if( buildInfo.state.equals(this.buildsFailedStatus) && ! failed ){ // failed for first time
                 failed = true;
@@ -126,8 +166,20 @@ public class TimeToFixBrokenBuildProcessor {
             }
         }
 
-        return new PeriodOfAnalysis("Time To Fix Broken Build", start, end, period, measure == StatisticalMeasure.MEAN ?  mathUtils.meanOfValues(timesToFix) : mathUtils.medianOfValues(timesToFix));
+        return timesToFix;
 
+    }
+
+    private void orderBuilds(List<BuildOfAnalysis> builds) {
+        Collections.sort(builds, (o1, o2) -> {
+            if (o1.finishedAt == null && o2.finishedAt == null)
+                return 0;
+            if (o1.finishedAt == null)
+                return -1;
+            if (o2.finishedAt == null)
+                return 1;
+            return o1.finishedAt.compareTo(o2.finishedAt);
+        });
     }
 
     private void validateBuild(List<BuildOfAnalysis> builds) {

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +51,8 @@ public class CommitActivityProcessor {
 
         List<PeriodOfAnalysis> returnList = new ArrayList<>();
         for (PeriodOfAnalysis periodOfAnalysis : periodsOfAnalysis){
-            returnList.add(calcCommitsActivity(commits, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod()));
+            List<CommitOfAnalysis> commitsOfPeriod = periodUtils.getCommitsOfPeriod(commits, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd());
+            returnList.add(calcCommitsActivityOfPeriod(commitsOfPeriod, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod()));
         }
 
         return returnList;
@@ -66,9 +66,36 @@ public class CommitActivityProcessor {
      * @param end
      * @return
      */
-    public PeriodOfAnalysis calcCommitsActivity(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
+    private PeriodOfAnalysis calcCommitsActivityOfPeriod(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
+        BigDecimal commitsActivity = calcCommitsActivityValues( commits, start, end);
+        return new PeriodOfAnalysis("Commit Activity", start, end, period, commitsActivity);
 
-        List<CommitOfAnalysis> commitsOfPeriod = periodUtils.getCommitsOfPeriod(commits, start, end);
+    }
+
+
+    /**
+     * Calc commit activity CI sub-practice for a specific period of time
+     * @param commits
+     * @param start
+     * @param end
+     * @return
+     */
+    public PeriodOfAnalysis calcCommitsActivity(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end) {
+        BigDecimal commitsActivity = calcCommitsActivityValues( commits, start, end);
+        return new PeriodOfAnalysis("Commit Activity", start, end, PeriodOfAnalysis.PERIOD.UNIQUE, commitsActivity);
+
+    }
+
+
+    /**
+     * Calc commit activity CI sub-practice for a specific period of time
+     * @param commits
+     * @param start
+     * @param end
+     * @return
+     */
+    public BigDecimal calcCommitsActivityValues(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end) {
+
 
         LocalDateTime currentReleaseDate = start;
 
@@ -81,7 +108,7 @@ public class CommitActivityProcessor {
             boolean containsBuild = false;
 
             buildsFor:
-            for(CommitOfAnalysis commit : commitsOfPeriod){
+            for(CommitOfAnalysis commit : commits){
 
                 if(commit.date != null) {
 
@@ -100,7 +127,7 @@ public class CommitActivityProcessor {
             currentReleaseDate = currentReleaseDate.plusDays(1);
         }
 
-        return new PeriodOfAnalysis("Commit Activity", start, end, period, new BigDecimal(qtdDaysWithCommits).divide(new BigDecimal(qtdTotalDays), GaugeMathUtils.SCALE, RoundingMode.HALF_UP ));
+        return new BigDecimal(qtdDaysWithCommits).divide(new BigDecimal(qtdTotalDays), GaugeMathUtils.SCALE, RoundingMode.HALF_UP );
 
     }
 

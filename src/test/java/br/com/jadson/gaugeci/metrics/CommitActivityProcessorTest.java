@@ -112,7 +112,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 1, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 5, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
+        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate);
         Assertions.assertEquals(new BigDecimal("1.0000"), periodOfAnalysis.getValue());
 
     }
@@ -146,7 +146,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 5, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
+        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate);
 
         Assertions.assertEquals(new BigDecimal("1.0000"), periodOfAnalysis.getValue());
 
@@ -188,7 +188,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 10, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
+        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate);
 
         Assertions.assertEquals(new BigDecimal("0.5000"), periodOfAnalysis.getValue());
 
@@ -229,7 +229,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 10, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
+        PeriodOfAnalysis periodOfAnalysis = processor.calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate);
 
         Assertions.assertEquals(new BigDecimal("0.0000"), periodOfAnalysis.getValue());
 
@@ -270,7 +270,7 @@ class CommitActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 5, 9, 0, 0);
 
-        PeriodOfAnalysis periodOfAnalysis = new CommitActivityProcessor().calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH);
+        PeriodOfAnalysis periodOfAnalysis = new CommitActivityProcessor().calcCommitsActivity(commitsInfo, startReleaseDate, endReleaseDate);
 
         Assertions.assertEquals(new BigDecimal("1.0000"), periodOfAnalysis.getValue());
 

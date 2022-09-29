@@ -1,6 +1,7 @@
 package br.com.jadson.gaugeci.controllers;
 
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputData;
+import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputDataHistory;
 import br.com.jadson.gaugeci.metrics.BuildDurationProcessor;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
 import br.com.jadson.gaugeci.model.StatisticalMeasure;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -31,11 +33,22 @@ public class BuildDurationController {
             @ApiResponse(code = 200, message = "Return the list of Build Activity CI sub-practices for each period of analysis"),
     })
     @PostMapping(path = "/history", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PeriodOfAnalysis>> calcBuildDurationHistory(@RequestBody BuildsAnalysisInputData inputData) {
+    public ResponseEntity<List<PeriodOfAnalysis>> calcBuildDurationHistory(@RequestBody BuildsAnalysisInputDataHistory inputData) {
 
         return new ResponseEntity<>(processor.calcBuildDurationHistory(inputData.builds, inputData.start, inputData.end, PeriodOfAnalysis.PERIOD.valueOf(inputData.period),
                 StatisticalMeasure.valueOf(inputData.measure),
                 UnitOfTime.valueOf(inputData.unit)), HttpStatus.OK);
+    }
+
+
+    @ApiOperation(value = "Calculate the Build Activity CI sub-practice values")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Return the list of Build Activity CI sub-practices values"),
+    })
+    @PostMapping(path = "/values", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<BigDecimal>> calcBuildDurationValues(@RequestBody BuildsAnalysisInputData inputData) {
+
+        return new ResponseEntity<>(processor.calcBuildDurationValues(inputData.builds, inputData.start, inputData.end, UnitOfTime.valueOf(inputData.unit)), HttpStatus.OK);
     }
 
 
@@ -46,7 +59,6 @@ public class BuildDurationController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PeriodOfAnalysis> calcBuildDuration(@RequestBody BuildsAnalysisInputData inputData) {
         return new ResponseEntity<>(processor.calcBuildDuration(inputData.builds, inputData.start, inputData.end,
-                PeriodOfAnalysis.PERIOD.valueOf(inputData.period),
                 StatisticalMeasure.valueOf(inputData.measure),
                 UnitOfTime.valueOf(inputData.unit)), HttpStatus.OK);
     }

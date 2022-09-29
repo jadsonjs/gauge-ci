@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
 class BuildActivityProcessorTest {
 
@@ -89,7 +87,7 @@ class BuildActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 10, 9, 0, 0);
 
-        Assertions.assertEquals(new BigDecimal("1.0000"), processor.calcBuildActivity(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH).getValue());
+        Assertions.assertEquals(new BigDecimal("1.0000"), processor.calcBuildActivity(buildsInfo, startReleaseDate, endReleaseDate).getValue());
 
     }
 
@@ -125,7 +123,7 @@ class BuildActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 10, 9, 0, 0);
 
-        Assertions.assertEquals(new BigDecimal("0.5000"), processor.calcBuildActivity(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH).getValue());
+        Assertions.assertEquals(new BigDecimal("0.5000"), processor.calcBuildActivity(buildsInfo, startReleaseDate, endReleaseDate).getValue());
 
     }
 
@@ -139,7 +137,7 @@ class BuildActivityProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 10, 9, 0, 0);
 
-        Assertions.assertEquals(new BigDecimal("0.0000"), processor.calcBuildActivity(buildsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH).getValue());
+        Assertions.assertEquals(new BigDecimal("0.0000"), processor.calcBuildActivity(buildsInfo, startReleaseDate, endReleaseDate).getValue());
 
     }
 
@@ -174,8 +172,11 @@ class BuildActivityProcessorTest {
 
         BuildOfAnalysis b6 = new BuildOfAnalysis();
         b6.startedAt = LocalDateTime.of(2021,2,2,1,0,0);
+        BuildOfAnalysis b7 = new BuildOfAnalysis();
+        b7.startedAt = LocalDateTime.of(2021,2,3,1,0,0);
 
         buildsInfo.add(b6);
+        buildsInfo.add(b7);
 
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 10, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 2, 11, 20, 0, 0);
@@ -184,8 +185,7 @@ class BuildActivityProcessorTest {
 
         Assertions.assertEquals(2, periods.size());
         Assertions.assertEquals(new BigDecimal("0.1563"), periods.get(0).getValue());  //  5 builds in different in 32 days
-        Assertions.assertEquals(new BigDecimal("0.1000"), periods.get(1).getValue());  // 1 build in 10 days
-
+        Assertions.assertEquals(new BigDecimal("0.2000"), periods.get(1).getValue());  //  2 builds in 10 days
 
     }
 }

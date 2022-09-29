@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
 class CommitsPerWeekDayProcessorTest {
 
@@ -126,7 +124,7 @@ class CommitsPerWeekDayProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 1, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 5, 9, 0, 0);
 
-        Assertions.assertEquals(new BigDecimal("4.6000"), processor.calcCommitsPerWeekDay(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH).getValue());
+        Assertions.assertEquals(new BigDecimal("4.6000"), processor.calcCommitsPerWeekDay(commitsInfo, startReleaseDate, endReleaseDate).getValue());
     }
 
 
@@ -160,7 +158,7 @@ class CommitsPerWeekDayProcessorTest {
         LocalDateTime startReleaseDate = LocalDateTime.of(2021, 1, 1, 1, 0, 0);
         LocalDateTime endReleaseDate = LocalDateTime.of(2021, 1, 5, 9, 0, 0);
 
-        Assertions.assertEquals(new BigDecimal("1.0000"), new CommitsPerWeekDayProcessor().calcCommitsPerWeekDay(commitsInfo, startReleaseDate, endReleaseDate, PeriodOfAnalysis.PERIOD.MONTH).getValue());
+        Assertions.assertEquals(new BigDecimal("1.0000"), new CommitsPerWeekDayProcessor().calcCommitsPerWeekDay(commitsInfo, startReleaseDate, endReleaseDate).getValue());
     }
 
 }

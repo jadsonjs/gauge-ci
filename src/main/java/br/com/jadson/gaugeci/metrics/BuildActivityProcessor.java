@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +50,8 @@ public class BuildActivityProcessor {
 
         List<PeriodOfAnalysis> returnList = new ArrayList<>();
         for (PeriodOfAnalysis periodOfAnalysis : periodsOfAnalysis){
-            returnList.add(calcBuildActivity(builds, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod()));
+            List<BuildOfAnalysis> buildsOfPeriod = periodUtils.getBuildOfPeriod(builds, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd());
+            returnList.add(calcBuildActivityOfPeriod(buildsOfPeriod, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod()));
         }
 
         return returnList;
@@ -65,7 +65,27 @@ public class BuildActivityProcessor {
      * @param end
      * @return
      */
-    public PeriodOfAnalysis calcBuildActivity(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
+    public PeriodOfAnalysis calcBuildActivityOfPeriod(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
+        BigDecimal ba = calcBuildActivityValues(builds,  start,  end);
+        return new PeriodOfAnalysis("Build Activity", start, end, period, ba);
+
+    }
+
+    public PeriodOfAnalysis calcBuildActivity(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end) {
+        BigDecimal ba = calcBuildActivityValues(builds,  start,  end);
+        return new PeriodOfAnalysis("Build Activity", start, end, PeriodOfAnalysis.PERIOD.UNIQUE, ba);
+
+    }
+
+
+    /**
+     * Calc build activity CI sub-practice for a specific period of time
+     * @param builds
+     * @param start
+     * @param end
+     * @return
+     */
+    public BigDecimal calcBuildActivityValues(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end) {
 
         List<BuildOfAnalysis> buildsOfPeriod = periodUtils.getBuildOfPeriod(builds, start, end);
 
@@ -97,9 +117,11 @@ public class BuildActivityProcessor {
             currentReleaseDate = currentReleaseDate.plusDays(1);
         }
 
-        return new PeriodOfAnalysis("Build Activity", start, end, period, new BigDecimal(qtdDaysWithBuilds).divide(new BigDecimal(qtdTotalDays), GaugeMathUtils.SCALE, RoundingMode.HALF_UP ));
+        return new BigDecimal(qtdDaysWithBuilds).divide(new BigDecimal(qtdTotalDays), GaugeMathUtils.SCALE, RoundingMode.HALF_UP );
 
     }
+
+
 
 
 }

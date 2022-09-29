@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,10 +50,34 @@ public class CommitsPerWeekDayProcessor {
 
         List<PeriodOfAnalysis> returnList = new ArrayList<>();
         for (PeriodOfAnalysis periodOfAnalysis : periodsOfAnalysis){
-            returnList.add(calcCommitsPerWeekDay(commits, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod()));
+            List<CommitOfAnalysis> commitsOfPeriod = periodUtils.getCommitsOfPeriod(commits, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd());
+            returnList.add(calcCommitsPerWeekDayOfPeriod(commitsOfPeriod, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod()));
         }
 
         return returnList;
+    }
+
+
+    private PeriodOfAnalysis calcCommitsPerWeekDayOfPeriod(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
+        List<BigDecimal> commitsPerWeekDay = calcCommitsPerWeekDayValues(commits, start, end);
+        // OBS.: here not work median, because we can have a lot of day with zero commits, that generate commitPerDay = 0 and is not thue
+        return new PeriodOfAnalysis("Commits Per Weekday", start, end, period, mathUtils.meanOfValues(commitsPerWeekDay) );
+
+    }
+
+    /**
+     * Calc commit per week day CI sub-practice for a specific period of time
+     * @param commits
+     * @param start
+     * @param end
+     * @return
+     */
+    public PeriodOfAnalysis calcCommitsPerWeekDay(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end) {
+
+        List<BigDecimal> commitsPerWeekDay = calcCommitsPerWeekDayValues(commits, start, end);
+        // OBS.: here not work median, because we can have a lot of day with zero commits, that generate commitPerDay = 0 and is not thue
+        return new PeriodOfAnalysis("Commits Per Weekday", start, end, PeriodOfAnalysis.PERIOD.UNIQUE, mathUtils.meanOfValues(commitsPerWeekDay));
+
     }
 
 
@@ -65,9 +88,9 @@ public class CommitsPerWeekDayProcessor {
      * @param end
      * @return
      */
-    public PeriodOfAnalysis calcCommitsPerWeekDay(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
+    public List<BigDecimal> calcCommitsPerWeekDayValues(List<CommitOfAnalysis> commits, LocalDateTime start, LocalDateTime end) {
 
-        List<CommitOfAnalysis> commitsOfPeriod = periodUtils.getCommitsOfPeriod(commits, start, end);
+
 
         LocalDateTime currentReleaseDate = start;
 
@@ -82,7 +105,7 @@ public class CommitsPerWeekDayProcessor {
 
         for(int index = 0 ; index < qtdTotalDays ; index ++){
 
-            for(CommitOfAnalysis commit : commitsOfPeriod){
+            for(CommitOfAnalysis commit : commits){
 
                 if(commit.date != null) {
 
@@ -106,7 +129,7 @@ public class CommitsPerWeekDayProcessor {
         }
 
         // here not work median, because we can have a lot of day with zero commits, that generate commitPerDay = 0 and is not thue
-        return new PeriodOfAnalysis("Commits Per Weekday", start, end, period, mathUtils.meanOfValues(metricList));
+        return metricList;
 
     }
 

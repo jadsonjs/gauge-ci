@@ -55,15 +55,34 @@ public class BuildDurationProcessor {
 
         List<PeriodOfAnalysis> returnList = new ArrayList<>();
         for (PeriodOfAnalysis periodOfAnalysis : periodsOfAnalysis){
-            returnList.add(calcBuildDuration(builds, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod(), measure, unit));
+            List<BuildOfAnalysis> buildOfPeriod = periodUtils.getBuildOfPeriod(builds, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd());
+            returnList.add(calcBuildDurationOfPeriod(buildOfPeriod, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod(), measure, unit));
         }
 
         return returnList;
     }
 
 
+    private PeriodOfAnalysis calcBuildDurationOfPeriod(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period, StatisticalMeasure measure, UnitOfTime unit) {
 
-    public PeriodOfAnalysis calcBuildDuration(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period, StatisticalMeasure measure, UnitOfTime unit) {
+        validateBuild(builds);
+
+        List<BigDecimal> buildsDurations = calcBuildDurationValues(builds,  start,  end,  unit);
+
+        return new PeriodOfAnalysis("Build Duration", start, end, period, measure == StatisticalMeasure.MEAN ?  mathUtils.meanOfValues(buildsDurations) : mathUtils.medianOfValues(buildsDurations));
+    }
+
+    public PeriodOfAnalysis calcBuildDuration(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, StatisticalMeasure measure, UnitOfTime unit) {
+
+        validateBuild(builds);
+
+        List<BigDecimal> buildsDurations = calcBuildDurationValues(builds,  start,  end,  unit);
+
+        return new PeriodOfAnalysis("Build Duration", start, end, PeriodOfAnalysis.PERIOD.UNIQUE, measure == StatisticalMeasure.MEAN ?  mathUtils.meanOfValues(buildsDurations) : mathUtils.medianOfValues(buildsDurations));
+    }
+
+
+    public List<BigDecimal> calcBuildDurationValues(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, UnitOfTime unit) {
 
         List<BuildOfAnalysis> buildOfPeriod = periodUtils.getBuildOfPeriod(builds, start, end);
 
@@ -76,7 +95,7 @@ public class BuildDurationProcessor {
             buildsDurations.add(dateUtils.scaleTime(duration.getSeconds(), unit));
         }
 
-        return new PeriodOfAnalysis("Build Duration", start, end, period, measure == StatisticalMeasure.MEAN ?  mathUtils.meanOfValues(buildsDurations) : mathUtils.medianOfValues(buildsDurations));
+        return buildsDurations;
     }
 
 

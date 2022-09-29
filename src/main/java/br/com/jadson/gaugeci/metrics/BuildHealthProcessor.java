@@ -2,8 +2,6 @@ package br.com.jadson.gaugeci.metrics;
 
 import br.com.jadson.gaugeci.model.BuildOfAnalysis;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
-import br.com.jadson.gaugeci.model.StatisticalMeasure;
-import br.com.jadson.gaugeci.model.UnitOfTime;
 import br.com.jadson.gaugeci.utils.GaugeDateUtils;
 import br.com.jadson.gaugeci.utils.GaugeMathUtils;
 import br.com.jadson.gaugeci.utils.GaugePeriodOfAnalysisUtils;
@@ -53,17 +51,25 @@ public class BuildHealthProcessor {
 
         List<PeriodOfAnalysis> returnList = new ArrayList<>();
         for (PeriodOfAnalysis periodOfAnalysis : periodsOfAnalysis){
-            returnList.add(calcBuildHealth(builds, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod()));
+            List<BuildOfAnalysis> buildOfPeriod = periodUtils.getBuildOfPeriod(builds, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd());
+            returnList.add(calcBuildHealthOfPeriod(buildOfPeriod, periodOfAnalysis.getStart(), periodOfAnalysis.getEnd(), periodOfAnalysis.getPeriod()));
         }
 
         return returnList;
     }
 
-    public PeriodOfAnalysis calcBuildHealth(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
+    public PeriodOfAnalysis calcBuildHealthOfPeriod(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end, PeriodOfAnalysis.PERIOD period) {
+        return new PeriodOfAnalysis("Build Health", start, end, period, calcBuildHealthValues(builds) );
+    }
 
-        List<BuildOfAnalysis> buildOfPeriod = periodUtils.getBuildOfPeriod(builds, start, end);
+    public PeriodOfAnalysis calcBuildHealth(List<BuildOfAnalysis> builds, LocalDateTime start, LocalDateTime end) {
+        return new PeriodOfAnalysis("Build Health", start, end, PeriodOfAnalysis.PERIOD.UNIQUE, calcBuildHealthValues(builds) );
+    }
 
-        long totalBuilds = buildOfPeriod.size();
+
+    public BigDecimal calcBuildHealthValues(List<BuildOfAnalysis> builds) {
+
+        long totalBuilds = builds.size();
 
         BigDecimal buildHealth = BigDecimal.ZERO;
 
@@ -81,10 +87,9 @@ public class BuildHealthProcessor {
                     .divide(new BigDecimal(totalBuilds), GaugeMathUtils.SCALE, RoundingMode.HALF_UP);
         }
 
-        return new PeriodOfAnalysis("Build Health", start, end, period, buildHealth);
+        return buildHealth;
 
     }
-
 
 
 

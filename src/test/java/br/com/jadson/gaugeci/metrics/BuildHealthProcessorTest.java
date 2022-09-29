@@ -28,7 +28,7 @@ class BuildHealthProcessorTest {
     GaugeMathUtils mathUtil;
 
     @InjectMocks
-    BuildHealthProcessor processor;
+    BuildHealthProcessor processor = new BuildHealthProcessor();
 
     @BeforeEach
     public void initMocks(){

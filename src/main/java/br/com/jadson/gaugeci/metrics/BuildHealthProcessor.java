@@ -24,6 +24,8 @@ import java.util.List;
 @Component
 public class BuildHealthProcessor {
 
+    private String buildsFailedStatus = "failed";
+
     GaugeDateUtils dateUtils;
 
     GaugeMathUtils mathUtils;
@@ -34,6 +36,20 @@ public class BuildHealthProcessor {
         this.mathUtils = new GaugeMathUtils();
         this.dateUtils = new GaugeDateUtils();
         this.periodUtils = new GaugePeriodOfAnalysisUtils();
+    }
+
+    /**
+     * Constructor to define labels of success and failed.
+     *
+     * @param failedStatusLabel
+     */
+    public BuildHealthProcessor(String failedStatusLabel){
+        this();
+        // pre condition
+        if(failedStatusLabel == null)
+            throw new IllegalArgumentException("build labels can not be null");
+
+        this.buildsFailedStatus = failedStatusLabel;
     }
 
     /**
@@ -77,7 +93,7 @@ public class BuildHealthProcessor {
 
             int qtdBrokenBuilds = 0;
             for (BuildOfAnalysis build : builds) {
-                if (build.state.equals("failed")) {
+                if (build.state.equals(this.buildsFailedStatus)) {
                     qtdBrokenBuilds++;
                 }
             }

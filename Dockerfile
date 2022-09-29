@@ -7,6 +7,8 @@ WORKDIR /app
 COPY . .
 RUN ./gradlew clean build
 
+# docker push jadsonjs/gauge-ci:v1.0.0
+
 # execution #
 FROM adoptopenjdk:11-jdk-openj9
 COPY --from=builder /app/build/libs/gauge-ci*.jar gauge-ci.jar

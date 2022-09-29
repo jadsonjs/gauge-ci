@@ -7,10 +7,12 @@ import java.util.List;
 
 public class BuildsAnalysisInputData {
 
+    public List<BuildOfAnalysis> builds;
+
     public LocalDateTime start;
     public LocalDateTime end;
-    public String period;
+
     public String measure;
     public String unit;
-    public List<BuildOfAnalysis> builds;
+
 }

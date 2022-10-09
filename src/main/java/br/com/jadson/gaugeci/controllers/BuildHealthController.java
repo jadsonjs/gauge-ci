@@ -3,8 +3,7 @@ package br.com.jadson.gaugeci.controllers;
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputData;
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputDataHistory;
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputDataValues;
-import br.com.jadson.gaugeci.metrics.BuildHealthProcessor;
-import br.com.jadson.gaugeci.metrics.TimeToFixBrokenBuildProcessor;
+import br.com.jadson.gaugeci.gauges.BuildHealthGauge;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -23,7 +22,7 @@ import java.util.List;
 public class BuildHealthController {
 
     @Autowired
-    BuildHealthProcessor processor;
+    BuildHealthGauge processor;
 
     @ApiOperation(value = "Calculate the Build Health CI sub-practice for multi periods of analysis")
     @ApiResponses(value = {
@@ -33,7 +32,7 @@ public class BuildHealthController {
     public ResponseEntity<List<PeriodOfAnalysis>> calcBuildHealthHistory(@RequestBody BuildsAnalysisInputDataHistory inputData,
                                                                          @RequestParam(name = "failedLabel", required = false, defaultValue = "failed") String failedStatusLabel) {
 
-        processor = new BuildHealthProcessor(failedStatusLabel);
+        processor = new BuildHealthGauge(failedStatusLabel);
 
         return new ResponseEntity<>(processor.calcBuildHealthHistory(inputData.builds, inputData.start, inputData.end,
                 PeriodOfAnalysis.PERIOD.valueOf(inputData.period) ), HttpStatus.OK);
@@ -48,7 +47,7 @@ public class BuildHealthController {
     public ResponseEntity<BigDecimal> calcBuildHealthValues(@RequestBody BuildsAnalysisInputDataValues inputData,
                                                             @RequestParam(name = "failedLabel", required = false, defaultValue = "failed") String failedStatusLabel) {
 
-        processor = new BuildHealthProcessor(failedStatusLabel);
+        processor = new BuildHealthGauge(failedStatusLabel);
 
         return new ResponseEntity<>(processor.calcBuildHealthValues(inputData.builds), HttpStatus.OK);
     }
@@ -63,7 +62,7 @@ public class BuildHealthController {
     public ResponseEntity<PeriodOfAnalysis> calcBuildHealth(@RequestBody BuildsAnalysisInputData inputData,
                                                             @RequestParam(name = "failedLabel", required = false, defaultValue = "failed") String failedStatusLabel) {
 
-        processor = new BuildHealthProcessor(failedStatusLabel);
+        processor = new BuildHealthGauge(failedStatusLabel);
 
         return new ResponseEntity<>(processor.calcBuildHealth(inputData.builds, inputData.start, inputData.end), HttpStatus.OK);
     }

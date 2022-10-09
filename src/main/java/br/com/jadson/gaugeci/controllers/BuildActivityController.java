@@ -2,7 +2,7 @@ package br.com.jadson.gaugeci.controllers;
 
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputData;
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputDataHistory;
-import br.com.jadson.gaugeci.metrics.BuildActivityProcessor;
+import br.com.jadson.gaugeci.gauges.BuildActivityGauge;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -24,7 +24,7 @@ import java.util.List;
 public class BuildActivityController {
 
     @Autowired
-    BuildActivityProcessor processor;
+    BuildActivityGauge processor;
 
     @ApiOperation(value = "Calculate the Build Activity CI sub-practice for multi periods of analysis")
     @ApiResponses(value = {

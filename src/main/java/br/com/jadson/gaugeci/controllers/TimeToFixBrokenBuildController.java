@@ -3,7 +3,7 @@ package br.com.jadson.gaugeci.controllers;
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputData;
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputDataHistory;
 import br.com.jadson.gaugeci.controllers.input.BuildsAnalysisInputDataValues;
-import br.com.jadson.gaugeci.metrics.TimeToFixBrokenBuildProcessor;
+import br.com.jadson.gaugeci.gauges.TimeToFixBrokenBuildGauge;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
 import br.com.jadson.gaugeci.model.StatisticalMeasure;
 import br.com.jadson.gaugeci.model.UnitOfTime;
@@ -24,7 +24,7 @@ import java.util.List;
 public class TimeToFixBrokenBuildController {
 
     @Autowired
-    TimeToFixBrokenBuildProcessor processor;
+    TimeToFixBrokenBuildGauge processor;
 
     @ApiOperation(value = "Calculate the Time to Fix a Broken Build CI sub-practice for multi periods of analysis")
     @ApiResponses(value = {
@@ -35,7 +35,7 @@ public class TimeToFixBrokenBuildController {
                                                                        @RequestParam(name = "successLabel", required = false, defaultValue = "passed") String successStatusLabel,
                                                                        @RequestParam(name = "failedLabel", required = false, defaultValue = "failed") String failedStatusLabel) {
 
-        processor = new TimeToFixBrokenBuildProcessor(successStatusLabel, failedStatusLabel);
+        processor = new TimeToFixBrokenBuildGauge(successStatusLabel, failedStatusLabel);
 
         return new ResponseEntity<>(processor.calcTimeToFixBrokenBuildHistory(inputData.builds,
                 inputData.start, inputData.end,
@@ -54,7 +54,7 @@ public class TimeToFixBrokenBuildController {
                                                           @RequestParam(name = "successLabel", required = false, defaultValue = "passed") String successStatusLabel,
                                                           @RequestParam(name = "failedLabel", required = false, defaultValue = "failed") String failedStatusLabel) {
 
-        processor = new TimeToFixBrokenBuildProcessor(successStatusLabel, failedStatusLabel);
+        processor = new TimeToFixBrokenBuildGauge(successStatusLabel, failedStatusLabel);
 
         return new ResponseEntity<>(processor.calcTimeToFixBrokenBuild(inputData.builds,
                 StatisticalMeasure.valueOf(inputData.measure),
@@ -71,7 +71,7 @@ public class TimeToFixBrokenBuildController {
                                                                 @RequestParam(name = "successLabel", required = false, defaultValue = "passed") String successStatusLabel,
                                                                 @RequestParam(name = "failedLabel", required = false, defaultValue = "failed") String failedStatusLabel) {
 
-        processor = new TimeToFixBrokenBuildProcessor(successStatusLabel, failedStatusLabel);
+        processor = new TimeToFixBrokenBuildGauge(successStatusLabel, failedStatusLabel);
 
         return new ResponseEntity<>(processor.calcTimeToFixBrokenBuildValues(inputData.builds, UnitOfTime.valueOf(inputData.unit)), HttpStatus.OK);
     }

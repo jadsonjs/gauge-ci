@@ -22,12 +22,15 @@ The supported CI sub-practices are:
 
    - **Commit Per Weekday**: Mean of absolute number of commits according to the week day of the analyzed period.
 
+   - **Comments Per Change**: Mean or Median of the number of comments grouped by changes, normally, a change is a Pull Request when we are working at Github.
+
 
 The coverage, related with "write automated developer tests" sub-practice, will not be supported because we already have specifics tools that calculate it value.
 
 #### Change Logs:
 
-- 1.0 - "Build Duration", "Build Activity", "Build Health", "Time to Fix a Broken Build", "Commit Activity" and "Commit Per Weekday" CI subpracties implementation.
+- 1.0 - "Build Duration", "Build Activity", "Build Health", "Time to Fix a Broken Build", "Commit Activity" and "Commit Per Weekday" CI sub-practices implementation.
+- 1.3 - "Comments Per Change" CI sub-practice implementation.
 
 
 ### Dependencies

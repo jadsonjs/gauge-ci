@@ -2,7 +2,7 @@ package br.com.jadson.gaugeci.controllers;
 
 import br.com.jadson.gaugeci.controllers.input.CommitsAnalysisInputData;
 import br.com.jadson.gaugeci.controllers.input.CommitsAnalysisInputDataHistory;
-import br.com.jadson.gaugeci.metrics.CommitActivityProcessor;
+import br.com.jadson.gaugeci.gauges.CommitActivityGauge;
 import br.com.jadson.gaugeci.model.PeriodOfAnalysis;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -30,7 +30,7 @@ import java.util.List;
 public class CommitActivityController {
 
     @Autowired
-    CommitActivityProcessor processor;
+    CommitActivityGauge processor;
 
     @ApiOperation(value = "Calculate the Commit Activity CI sub-practice for multi periods of analysis")
     @ApiResponses(value = {

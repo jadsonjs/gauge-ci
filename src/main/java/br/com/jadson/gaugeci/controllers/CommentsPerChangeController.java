@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/Comments-per-change")
+@RequestMapping(path = "/comments-per-change")
 public class CommentsPerChangeController {
 
     @Autowired

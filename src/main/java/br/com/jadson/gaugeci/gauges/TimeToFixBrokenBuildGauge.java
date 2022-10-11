@@ -116,7 +116,7 @@ public class TimeToFixBrokenBuildGauge {
         orderBuilds(builds);
 
         List<BigDecimal> timesToFix = calcTimeToFixBrokenBuildValues(builds, unit);
-        return new PeriodOfAnalysis("Time To Fix Broken Build", builds.get(0).startedAt, builds.get(builds.size()-1).finishedAt, PeriodOfAnalysis.PERIOD.UNIQUE, measure == StatisticalMeasure.MEAN ?  mathUtils.meanOfValues(timesToFix) : mathUtils.medianOfValues(timesToFix));
+        return new PeriodOfAnalysis("Time To Fix Broken Build", ( builds.size() > 0 ? builds.get(0).startedAt : LocalDateTime.now()) , ( builds.size() > 0 ? builds.get(builds.size()-1).finishedAt : LocalDateTime.now()), PeriodOfAnalysis.PERIOD.UNIQUE, measure == StatisticalMeasure.MEAN ?  mathUtils.meanOfValues(timesToFix) : mathUtils.medianOfValues(timesToFix));
 
     }
 

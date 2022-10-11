@@ -45,6 +45,12 @@ class TimeToFixBrokenBuildGaugeTest {
         Assertions.assertEquals(new BigDecimal("3600"), processor.calcTimeToFixBrokenBuild(buildsInfo, StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
     }
 
+
+    @Test
+    void calcTimeToFixBrokenBuildZeroBuilds() {
+        Assertions.assertEquals(new BigDecimal("0"), processor.calcTimeToFixBrokenBuild(new ArrayList<>(), StatisticalMeasure.MEDIAN, UnitOfTime.SECONDS).getValue());
+    }
+
     @Test
     void calcTimeToFixBrokenBuildOtherLabels() {
 

@@ -98,9 +98,10 @@ public class BuildHealthGauge {
                 }
             }
 
+            BigDecimal denominator = (  new BigDecimal(totalBuilds).subtract(new BigDecimal(qtdBrokenBuilds))  );
+
             // (totalBuilds - qtdBrokenBuilds) /  totalBuilds
-            buildHealth = (new BigDecimal(totalBuilds).subtract(new BigDecimal(qtdBrokenBuilds)))
-                    .divide(new BigDecimal(totalBuilds), GaugeMathUtils.SCALE, RoundingMode.HALF_UP);
+            buildHealth = denominator.divide(  new BigDecimal(totalBuilds), GaugeMathUtils.SCALE, RoundingMode.HALF_UP );
         }
 
         return buildHealth;
